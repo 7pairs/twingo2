@@ -6,11 +6,12 @@ Twingoで利用する認証バックエンドを提供します。
 @author: Jun-ya HASEBA
 """
 
+import tweepy
+from tweepy.error import TweepError
+
 from django.conf import settings
 
-from twython import Twython, TwythonError
-
-from twingo.models import User
+from twingo2.models import User
 
 
 class TwitterBackend:
@@ -19,55 +20,50 @@ class TwitterBackend:
     django.contrib.auth.backends.ModelBackendの代替として使用してください。
     """
 
-    def authenticate(self, tokens):
+    def authenticate(self, access_token):
         """
         Twitterから取得したトークンをもとに認証を行います。
 
-        @param tokens: Twitterから取得したトークン
-        @type tokens: dict
+        @param access_token: Twitterから取得したトークン
+        @type access_token: tuple
         @return: 認証成功時は認証したユーザー。認証失敗時はNone。
         @rtype: twingo.models.User
         """
-        # Twythonオブジェクトを生成
-        twython = Twython(
-            settings.TWITTER_API_KEY,
-            settings.TWITTER_API_SECRET,
-            tokens['oauth_token'],
-            tokens['oauth_token_secret']
-        )
+        # APIオブジェクトを構築する
+        oauth_handler = tweepy.OAuthHandler(settings.CONSUMER_KEY, settings.CONSUMER_SECRET)
+        oauth_handler.set_access_token(access_token[0], access_token[1])
+        api = tweepy.API(oauth_handler)
 
-        # Twitterプロフィールを取得
+        # ログインユーザーのTwitter情報を取得する
         try:
-            profile = twython.verify_credentials()
-            if not profile:
-                return None
-        except TwythonError:
+            twitter_user = api.me()
+        except TweepError:
             return None
 
         # DBからユーザーを取得/新規作成
         try:
-            user = User.objects.get(twitter_id=profile['id'])
+            user = User.objects.get(twitter_id=twitter_user.id)
         except User.DoesNotExist:
             admin_twitter_id = getattr(settings, 'ADMIN_TWITTER_ID', None)
-            if admin_twitter_id and profile['id'] in admin_twitter_id:
+            if admin_twitter_id and twitter_user.id in admin_twitter_id:
                 user = User.objects.create_superuser(
-                    profile['id'],
-                    profile['screen_name'],
-                    profile['name'],
-                    profile['location'],
-                    profile['url'],
-                    profile['description'],
-                    profile['profile_image_url']
+                    twitter_user.id,
+                    twitter_user.screen_name,
+                    twitter_user.name,
+                    twitter_user.location,
+                    twitter_user.url,
+                    twitter_user.description,
+                    twitter_user.profile_image_url
                 )
             else:
                 user = User.objects.create_user(
-                    profile['id'],
-                    profile['screen_name'],
-                    profile['name'],
-                    profile['location'],
-                    profile['url'],
-                    profile['description'],
-                    profile['profile_image_url']
+                    twitter_user.id,
+                    twitter_user.screen_name,
+                    twitter_user.name,
+                    twitter_user.location,
+                    twitter_user.url,
+                    twitter_user.description,
+                    twitter_user.profile_image_url
                 )
 
         # ユーザーを返す

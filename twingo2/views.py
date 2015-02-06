@@ -6,12 +6,12 @@ Twingoで利用するビューを提供します。
 @author: Jun-ya HASEBA
 """
 
+import tweepy
+
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
-from django.core.exceptions import PermissionDenied
-from django.http import HttpResponseRedirect
-
-from twython import Twython
+from django.core.urlresolvers import reverse
+from django.http import HttpResponse, HttpResponseRedirect
 
 
 def twitter_login(request):
@@ -23,25 +23,23 @@ def twitter_login(request):
     @return: 遷移先を示すレスポンスオブジェクト
     @rtype: django.http.HttpResponse
     """
-    # TwitterからのコールバックURLを取得
-    callback_url = getattr(settings, 'TWITTER_CALLBACK_URL', None)
-    if not callback_url:
-        callback_url = 'http://%s/callback/' % request.META.get('HTTP_HOST', 'localhost')
+    # 認証URLを取得する
+    oauth_handler = tweepy.OAuthHandler(
+        settings.CONSUMER_KEY,
+        settings.CONSUMER_SECRET,
+        request.build_absolute_uri(reverse(twitter_callback))
+    )
+    authorization_url = oauth_handler.get_authorization_url()
 
-    # 認証トークンを取得
-    twython = Twython(settings.TWITTER_API_KEY, settings.TWITTER_API_SECRET)
-    tokens = twython.get_authentication_tokens(callback_url=callback_url)
+    # リクエストトークンをセッションに保存する
+    request.session['request_token'] = oauth_handler.request_token
 
-    # 認証トークンをセッションに保存
-    request.session['oauth_token'] = tokens['oauth_token']
-    request.session['oauth_token_secret'] = tokens['oauth_token_secret']
-
-    # ログイン後のリダイレクト先URLをセッションに保存
+    # ログイン完了後のリダイレクト先URLをセッションに保存する
     if 'next' in request.GET:
         request.session['next'] = request.GET['next']
 
-    # 認証URLにリダイレクト
-    return HttpResponseRedirect(tokens['auth_url'])
+    # 認証URLにリダイレクトする
+    return HttpResponseRedirect(authorization_url)
 
 
 def twitter_logout(request):
@@ -53,12 +51,12 @@ def twitter_logout(request):
     @return: 遷移先を示すレスポンスオブジェクト
     @rtype: django.http.HttpResponse
     """
-    # ログアウト処理
+    # ログアウト処理を実行する
     logout(request)
 
-    # トップページにリダイレクト
-    top_url = getattr(settings, 'TOP_URL', '/')
-    return HttpResponseRedirect(top_url)
+    # ログアウト後に遷移するべき画面にリダイレクトする
+    url = getattr(settings, 'AFTER_LOGOUT_URL', '/')
+    return HttpResponseRedirect(url)
 
 
 def twitter_callback(request):
@@ -70,41 +68,34 @@ def twitter_callback(request):
     @return: 遷移先を示すレスポンスオブジェクト
     @rtype: django.http.HttpResponse
     """
-    # セッションからトークンを取得
-    oauth_token = request.session.get('oauth_token')
-    oauth_token_secret = request.session.get('oauth_token_secret')
-    if not oauth_token or not oauth_token_secret:
+    # セッションからリクエストトークンを取得する
+    request_token = request.session.get('request_token')
+    if not request_token:
         request.session.clear()
-        raise PermissionDenied
+        return HttpResponse('Unauthorized', status=401)
 
-    # セッションの値とTwitterからの返却値が一致しない場合は処理続行不可能
-    if oauth_token != request.GET.get('oauth_token'):
-        request.session.clear()
-        raise PermissionDenied
-
-    # 認証トークンを取得
-    twython = Twython(
-        settings.TWITTER_API_KEY,
-        settings.TWITTER_API_SECRET,
-        oauth_token,
-        oauth_token_secret
-    )
+    # Twitterからの返却値を取得する
+    oauth_token = request.GET.get('oauth_token')
     oauth_verifier = request.GET.get('oauth_verifier')
-    tokens = twython.get_authorized_tokens(oauth_verifier)
 
-    # 認証処理
-    authenticated_user = authenticate(tokens=tokens)
+    # セッションの値とTwitterからの返却値が一致しない場合は処理を中断する
+    if request_token.get('oauth_token') != oauth_token:
+        request.session.clear()
+        return HttpResponse('Unauthorized', status=401)
 
-    # ログイン処理
+    # アクセストークンを取得する
+    oauth_handler = tweepy.OAuthHandler(settings.CONSUMER_KEY, settings.CONSUMER_SECRET)
+    oauth_handler.request_token = request_token
+    access_token = oauth_handler.get_access_token(oauth_verifier)
+
+    # 認証処理を実行する
+    authenticated_user = authenticate(access_token=access_token)
     if authenticated_user:
         login(request, authenticated_user)
     else:
         request.session.clear()
-        raise PermissionDenied
+        return HttpResponse('Unauthorized', status=401)
 
-    # 認証成功
-    if 'next' in request.session:
-        next_url = request.session.pop('next')
-    else:
-        next_url = getattr(settings, 'TOP_URL', '/')
-    return HttpResponseRedirect(next_url)
+    # ログイン後に遷移するべき画面にリダイレクトする
+    url = request.session.get('next', getattr(settings, 'AFTER_LOGIN_URL', '/'))
+    return HttpResponseRedirect(url)
