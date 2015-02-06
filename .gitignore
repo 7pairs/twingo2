@@ -52,3 +52,6 @@ coverage.xml
 # Sphinx documentation
 docs/_build/
 
+# IntelliJ IDEA
+.idea
+twingo2.iml
