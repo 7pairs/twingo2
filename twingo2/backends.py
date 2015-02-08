@@ -37,7 +37,7 @@ class TwitterBackend:
         try:
             user = User.objects.get(twitter_id=twitter_user.id)
         except User.DoesNotExist:
-            admin_twitter_id = getattr(settings, 'ADMIN_TWITTER_ID')
+            admin_twitter_id = getattr(settings, 'ADMIN_TWITTER_ID', None)
             if admin_twitter_id and twitter_user.id in admin_twitter_id:
                 user = User.objects.create_superuser(
                     twitter_id=twitter_user.id,
