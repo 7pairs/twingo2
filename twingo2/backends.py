@@ -37,26 +37,26 @@ class TwitterBackend:
         try:
             user = User.objects.get(twitter_id=twitter_user.id)
         except User.DoesNotExist:
-            admin_twitter_id = getattr(settings, 'ADMIN_TWITTER_ID', None)
+            admin_twitter_id = getattr(settings, 'ADMIN_TWITTER_ID')
             if admin_twitter_id and twitter_user.id in admin_twitter_id:
                 user = User.objects.create_superuser(
-                    twitter_user.id,
-                    twitter_user.screen_name,
-                    twitter_user.name,
-                    twitter_user.location,
-                    twitter_user.url,
-                    twitter_user.description,
-                    twitter_user.profile_image_url
+                    twitter_id=twitter_user.id,
+                    screen_name=twitter_user.screen_name,
+                    name=twitter_user.name,
+                    description=twitter_user.description,
+                    location=twitter_user.location,
+                    url=twitter_user.url,
+                    profile_image_url=twitter_user.profile_image_url
                 )
             else:
                 user = User.objects.create_user(
-                    twitter_user.id,
-                    twitter_user.screen_name,
-                    twitter_user.name,
-                    twitter_user.location,
-                    twitter_user.url,
-                    twitter_user.description,
-                    twitter_user.profile_image_url
+                    twitter_id=twitter_user.id,
+                    screen_name=twitter_user.screen_name,
+                    name=twitter_user.name,
+                    description=twitter_user.description,
+                    location=twitter_user.location,
+                    url=twitter_user.url,
+                    profile_image_url=twitter_user.profile_image_url
                 )
 
         # ユーザーが有効であるかチェックする
