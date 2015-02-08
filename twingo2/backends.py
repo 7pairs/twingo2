@@ -1,11 +1,5 @@
 # -*- coding: utf-8 -*-
 
-"""
-Twingoで利用する認証バックエンドを提供します。
-
-@author: Jun-ya HASEBA
-"""
-
 import tweepy
 from tweepy.error import TweepError
 
@@ -16,18 +10,17 @@ from twingo2.models import User
 
 class TwitterBackend:
     """
-    TwitterのOAuthを利用した認証バックエンドです。
-    django.contrib.auth.backends.ModelBackendの代替として使用してください。
+    TwitterのOAuthを利用した認証バックエンド。
+    ModelBackendの代替として設定することを想定している。
     """
 
     def authenticate(self, access_token):
         """
-        Twitterから取得したトークンをもとに認証を行います。
-
-        @param access_token: Twitterから取得したトークン
-        @type access_token: tuple
-        @return: 認証成功時は認証したユーザー。認証失敗時はNone。
-        @rtype: twingo.models.User
+        Twitterから取得したアクセストークンをもとに認証を行う。
+        :param access_token: アクセストークン
+        :type access_token: tuple
+        :return: ユーザー情報
+        :rtype: twingo2.models.User
         """
         # APIオブジェクトを構築する
         oauth_handler = tweepy.OAuthHandler(settings.CONSUMER_KEY, settings.CONSUMER_SECRET)
@@ -40,45 +33,47 @@ class TwitterBackend:
         except TweepError:
             return None
 
-        # DBからユーザーを取得/新規作成
+        # ユーザー情報を取得する
         try:
             user = User.objects.get(twitter_id=twitter_user.id)
         except User.DoesNotExist:
             admin_twitter_id = getattr(settings, 'ADMIN_TWITTER_ID', None)
             if admin_twitter_id and twitter_user.id in admin_twitter_id:
                 user = User.objects.create_superuser(
-                    twitter_user.id,
-                    twitter_user.screen_name,
-                    twitter_user.name,
-                    twitter_user.location,
-                    twitter_user.url,
-                    twitter_user.description,
-                    twitter_user.profile_image_url
+                    twitter_id=twitter_user.id,
+                    screen_name=twitter_user.screen_name,
+                    name=twitter_user.name,
+                    description=twitter_user.description,
+                    location=twitter_user.location,
+                    url=twitter_user.url,
+                    profile_image_url=twitter_user.profile_image_url
                 )
             else:
                 user = User.objects.create_user(
-                    twitter_user.id,
-                    twitter_user.screen_name,
-                    twitter_user.name,
-                    twitter_user.location,
-                    twitter_user.url,
-                    twitter_user.description,
-                    twitter_user.profile_image_url
+                    twitter_id=twitter_user.id,
+                    screen_name=twitter_user.screen_name,
+                    name=twitter_user.name,
+                    description=twitter_user.description,
+                    location=twitter_user.location,
+                    url=twitter_user.url,
+                    profile_image_url=twitter_user.profile_image_url
                 )
 
-        # ユーザーを返す
-        return user
+        # ユーザーが有効であるかチェックする
+        if user.is_active:
+            return user
+        else:
+            return None
 
     def get_user(self, user_id):
         """
-        指定されたIDのユーザー情報を取得します。
-
-        @param user_id: 取得するユーザーのID
-        @type user_id: int
-        @return: 該当するユーザー。取得できなかった場合はNone。
-        @rtype: twingo.models.User
+        指定されたIDのユーザー情報を取得する。
+        :param user_id: UserのID
+        :type user_id: int
+        :return: ユーザー情報
+        :rtype: twingo2.models.User
         """
-        # ユーザーを取得
+        # ユーザー情報を取得する
         try:
             user = User.objects.get(pk=user_id)
             return user
