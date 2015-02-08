@@ -1,11 +1,5 @@
 # -*- coding: utf-8 -*-
 
-"""
-Twingoで利用するビューを提供します。
-
-@author: Jun-ya HASEBA
-"""
-
 import tweepy
 
 from django.conf import settings
@@ -16,12 +10,12 @@ from django.http import HttpResponse, HttpResponseRedirect
 
 def twitter_login(request):
     """
-    ログインURLへのアクセス時に呼び出されます。
+    ログインを行う。
 
-    @param request: リクエストオブジェクト
-    @type request: django.http.HttpRequest
-    @return: 遷移先を示すレスポンスオブジェクト
-    @rtype: django.http.HttpResponse
+    :param request: リクエストオブジェクト
+    :type request: django.http.HttpRequest
+    :return: 遷移先を示すレスポンスオブジェクト
+    :rtype: django.http.HttpResponse
     """
     # 認証URLを取得する
     oauth_handler = tweepy.OAuthHandler(
@@ -42,31 +36,14 @@ def twitter_login(request):
     return HttpResponseRedirect(authorization_url)
 
 
-def twitter_logout(request):
-    """
-    ログアウトURLへのアクセス時に呼び出されます。
-
-    @param request: リクエストオブジェクト
-    @type request: django.http.HttpRequest
-    @return: 遷移先を示すレスポンスオブジェクト
-    @rtype: django.http.HttpResponse
-    """
-    # ログアウト処理を実行する
-    logout(request)
-
-    # ログアウト後に遷移するべき画面にリダイレクトする
-    url = getattr(settings, 'AFTER_LOGOUT_URL', '/')
-    return HttpResponseRedirect(url)
-
-
 def twitter_callback(request):
     """
-    Twitterからのコールバック時に呼び出されます。
+    Twitterからのコールバック時に呼び出される処理。
 
-    @param request: リクエストオブジェクト
-    @type request: django.http.HttpRequest
-    @return: 遷移先を示すレスポンスオブジェクト
-    @rtype: django.http.HttpResponse
+    :param request: リクエストオブジェクト
+    :type request: django.http.HttpRequest
+    :return: 遷移先を示すレスポンスオブジェクト
+    :rtype: django.http.HttpResponse
     """
     # セッションからリクエストトークンを取得する
     request_token = request.session.get('request_token')
@@ -98,4 +75,21 @@ def twitter_callback(request):
 
     # ログイン後に遷移するべき画面にリダイレクトする
     url = request.session.get('next', getattr(settings, 'AFTER_LOGIN_URL', '/'))
+    return HttpResponseRedirect(url)
+
+
+def twitter_logout(request):
+    """
+    ログアウトを行う。
+
+    :param request: リクエストオブジェクト
+    :type request: django.http.HttpRequest
+    :return: 遷移先を示すレスポンスオブジェクト
+    :rtype: django.http.HttpResponse
+    """
+    # ログアウト処理を実行する
+    logout(request)
+
+    # ログアウト後に遷移するべき画面にリダイレクトする
+    url = getattr(settings, 'AFTER_LOGOUT_URL', '/')
     return HttpResponseRedirect(url)
