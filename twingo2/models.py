@@ -109,13 +109,13 @@ class User(AbstractBaseUser):
     profile_image_url = models.URLField('プロフィール画像', blank=True)
     """プロフィール画像のURL"""
 
-    is_active = models.BooleanField('有効フラグ')
+    is_active = models.BooleanField('有効フラグ', default=False)
     """有効フラグ"""
 
-    is_superuser = models.BooleanField('管理者権限')
+    is_superuser = models.BooleanField('管理者権限', default=False)
     """管理者権限"""
 
-    is_staff = models.BooleanField('管理画面操作権限')
+    is_staff = models.BooleanField('管理画面操作権限', default=False)
     """管理画面操作権限"""
 
     created_at = models.DateTimeField('登録日時', auto_now_add=True)
