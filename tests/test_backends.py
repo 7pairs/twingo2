@@ -39,8 +39,8 @@ class UserFactory(factory.DjangoModelFactory):
     name = factory.Sequence(lambda x: 'name_%02d' % x)
     description = factory.Sequence(lambda x: 'description_%02d' % x)
     location = factory.Sequence(lambda x: 'location_%02d' % x)
-    url = factory.Sequence(lambda x: 'http://dummy.com/%02d.html')
-    profile_image_url = factory.Sequence(lambda x: 'http://dummy.com/%02d.jpg')
+    url = factory.Sequence(lambda x: 'http://dummy.com/user_%02d.html' % x)
+    profile_image_url = factory.Sequence(lambda x: 'http://dummy.com/user_%02d.jpg' % x)
     is_active = True
     is_superuser = False
     is_staff = False
@@ -54,6 +54,9 @@ class DisableUserFactory(UserFactory):
 
 
 class BackendsTest(TestCase):
+    """
+    backends.pyに対するテストコード。
+    """
 
     @patch('twingo2.backends.API')
     @patch('twingo2.backends.OAuthHandler')
