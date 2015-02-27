@@ -130,6 +130,10 @@ class User(AbstractBaseUser):
     USERNAME_FIELD = 'twitter_id'
     """usernameとして使用するフィールド"""
 
+    def __str__(self):
+        # Twitter IDの文字列表現を返す
+        return str(self.twitter_id)
+
     def get_full_name(self):
         # ユーザー名と名前を返す
         return '%s（%s）' % (self.screen_name, self.name)
