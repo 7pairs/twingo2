@@ -7,7 +7,7 @@ Twitterのユーザー情報を利用したログインの仕組みを、簡単�
 
 ## バージョン
 
-Python3.4 + Django1.7での動作を確認しております。
+Python3.4 + Django1.7での動作を確認しております。また、Python3.3 + Django1.7の組み合わせでもユニットテストを実施しております。
 
 ## インストール
 
@@ -70,7 +70,7 @@ AUTH_USER_MODEL = 'twingo2.User'
 
 ## URLディスパッチャー
 
-最後に、`urls.py` に以下の設定を追加してください。
+`urls.py` に以下の設定を追加してください。
 
 ```python
 urlpatterns = patterns('',
@@ -80,3 +80,16 @@ urlpatterns = patterns('',
 ```
 
 `r'^authentication_url/'` は任意のURLで構いません。その配下のURLでtwingo2が動作します。
+
+また、 `@login_required` デコレータを使用する場合、 `settings.py` に以下の記述を追加してください。
+
+```python
+LOGIN_URL = 'authentication_url/login/'
+```
+
+`authentication_url` の部分は `urls.py` で設定した値と合わせてください。
+
+## ライセンス
+
+twingo2は [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0) にて提供します。
+ただし、twingo2が依存している [Tweepy](https://github.com/tweepy/tweepy) は [The MIT License](http://opensource.org/licenses/mit-license.php) にて提供されていますのでご注意ください。
