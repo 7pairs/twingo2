@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import tweepy
+from tweepy import OAuthHandler
 
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
@@ -18,7 +18,7 @@ def twitter_login(request):
     :rtype: django.http.HttpResponse
     """
     # 認証URLを取得する
-    oauth_handler = tweepy.OAuthHandler(
+    oauth_handler = OAuthHandler(
         settings.CONSUMER_KEY,
         settings.CONSUMER_SECRET,
         request.build_absolute_uri(reverse(twitter_callback))
@@ -61,7 +61,7 @@ def twitter_callback(request):
         return HttpResponse('Unauthorized', status=401)
 
     # アクセストークンを取得する
-    oauth_handler = tweepy.OAuthHandler(settings.CONSUMER_KEY, settings.CONSUMER_SECRET)
+    oauth_handler = OAuthHandler(settings.CONSUMER_KEY, settings.CONSUMER_SECRET)
     oauth_handler.request_token = request_token
     access_token = oauth_handler.get_access_token(oauth_verifier)
 

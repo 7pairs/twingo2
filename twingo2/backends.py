@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import tweepy
+from tweepy import API, OAuthHandler
 from tweepy.error import TweepError
 
 from django.conf import settings
@@ -23,9 +23,9 @@ class TwitterBackend:
         :rtype: twingo2.models.User
         """
         # APIオブジェクトを構築する
-        oauth_handler = tweepy.OAuthHandler(settings.CONSUMER_KEY, settings.CONSUMER_SECRET)
+        oauth_handler = OAuthHandler(settings.CONSUMER_KEY, settings.CONSUMER_SECRET)
         oauth_handler.set_access_token(access_token[0], access_token[1])
-        api = tweepy.API(oauth_handler)
+        api = API(oauth_handler)
 
         # ログインユーザーのTwitter情報を取得する
         try:
@@ -75,7 +75,7 @@ class TwitterBackend:
         """
         # ユーザー情報を取得する
         try:
-            user = User.objects.get(pk=user_id)
+            user = User.objects.get(pk=user_id, is_active=True)
             return user
         except User.DoesNotExist:
             return None
