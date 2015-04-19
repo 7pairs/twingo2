@@ -28,7 +28,7 @@ setup(
     description='Authentication application for Django on Python 3.x',
     author='Jun-ya HASEBA',
     author_email='7pairs@gmail.com',
-    url='http://seven-pairs.hatenablog.jp/',
+    url='https://github.com/7pairs/twingo2',
     packages=find_packages(exclude=['tests']),
-    install_requires=['tweepy'],
+    install_requires=['tweepy>=3.0'],
 )
