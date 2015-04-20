@@ -16,7 +16,6 @@
 # limitations under the License.
 #
 
-from nose.tools import *
 from mock import patch
 
 from django.conf import settings
@@ -67,15 +66,15 @@ class ViewsTest(TestCase):
         response = self.client.get(reverse('twingo2_login'))
         session = self.client.session
         self.assertRedirects(response, '/redirect/')
-        assert_equal('Request Token', session['request_token'])
-        assert_equal(None, session.get('next'))
+        self.assertEqual('Request Token', session['request_token'])
+        self.assertIsNone(session.get('next'))
 
     @patch('twingo2.views.OAuthHandler')
     def test_twitter_login_02(self, oauth_handler):
         """
         [対象] twitter_login()
         [条件] 次ページを指定してアクセスする。
-        [結果] セッションにリクエストトークン、次ページのURLが保管され、認証ページにリダイレクトされる。
+        [結果] セッションにリクエストトークンと次ページのURLが保管され、認証ページにリダイレクトされる。
         """
         oauth_handler.return_value.get_authorization_url.return_value = '/redirect/'
         oauth_handler.return_value.request_token = 'Request Token'
@@ -83,8 +82,8 @@ class ViewsTest(TestCase):
         response = self.client.get(reverse('twingo2_login'), {'next': '/next_page/'})
         session = self.client.session
         self.assertRedirects(response, '/redirect/')
-        assert_equal('Request Token', session['request_token'])
-        assert_equal('/next_page/', session.get('next'))
+        self.assertEqual('Request Token', session['request_token'])
+        self.assertEqual('/next_page/', session.get('next'))
 
     @patch('twingo2.views.login')
     @patch('twingo2.views.authenticate')
@@ -92,7 +91,7 @@ class ViewsTest(TestCase):
     def test_twitter_callback_01(self, oauth_handler, authenticate, login):
         """
         [対象] twitter_callback()
-        [条件] ログイン後に遷移する画面を指定する。
+        [条件] ログイン後に遷移する画面をセッションで指定する。
         [結果] 指定された画面にリダイレクトされる。
         """
         authenticate.return_value = 'user'
@@ -112,8 +111,8 @@ class ViewsTest(TestCase):
     def test_twitter_callback_02(self, oauth_handler, authenticate, login):
         """
         [対象] twitter_callback()
-        [条件] ログイン後に遷移する画面を指定しない(settings.pyでは指定する)。
-        [結果] settings.pyで指定された画面にリダイレクトされる。
+        [条件] ログイン後に遷移する画面をsettings.pyで指定する。
+        [結果] 指定された画面にリダイレクトされる。
         """
         authenticate.return_value = 'user'
 
@@ -130,7 +129,7 @@ class ViewsTest(TestCase):
     def test_twitter_callback_03(self, oauth_handler, authenticate, login):
         """
         [対象] twitter_callback()
-        [条件] ログイン後に遷移する画面を指定しない(settings.pyでも指定しない)。
+        [条件] ログイン後に遷移する画面を指定しない。
         [結果] トップ画面にリダイレクトされる。
         """
         authenticate.return_value = 'user'
@@ -149,12 +148,12 @@ class ViewsTest(TestCase):
         [結果] 401エラーが発生する。
         """
         response = self.client.get(reverse('twingo2_callback'), {'oauth_token': 'token', 'oauth_verifier': 'verifier'})
-        assert_equal(401, response.status_code)
+        self.assertEqual(401, response.status_code)
 
     def test_twitter_callback_05(self):
         """
         [対象] twitter_callback()
-        [条件] セッション内のリクエストトークンとGETパラメータのリクエストトークンが異なる。
+        [条件] セッションに格納されたリクエストトークンとGETパラメータのリクエストトークンが異なる。
         [結果] 401エラーが発生する。
         """
         session = self.client.session
@@ -162,7 +161,7 @@ class ViewsTest(TestCase):
         session.save()
 
         response = self.client.get(reverse('twingo2_callback'), {'oauth_token': 'token', 'oauth_verifier': 'verifier'})
-        assert_equal(401, response.status_code)
+        self.assertEqual(401, response.status_code)
 
     @patch('twingo2.views.authenticate')
     @patch('twingo2.views.OAuthHandler')
@@ -179,7 +178,7 @@ class ViewsTest(TestCase):
         session.save()
 
         response = self.client.get(reverse('twingo2_callback'), {'oauth_token': 'token', 'oauth_verifier': 'verifier'})
-        assert_equal(401, response.status_code)
+        self.assertEqual(401, response.status_code)
 
     @override_settings(AFTER_LOGOUT_URL='/after/')
     @patch('twingo2.views.logout')
@@ -187,7 +186,7 @@ class ViewsTest(TestCase):
         """
         [対象] twitter_logout()
         [条件] ログイン後に遷移する画面をsettings.pyで指定する。
-        [結果] settings.pyで指定された画面にリダイレクトされる。
+        [結果] 指定された画面にリダイレクトされる。
         """
         response = self.client.get(reverse('twingo2_logout'))
         self.assertRedirects(response, '/after/')
