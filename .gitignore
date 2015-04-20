@@ -52,6 +52,9 @@ coverage.xml
 # Sphinx documentation
 docs/_build/
 
+# pyenv
+.python-version
+
 # IntelliJ IDEA
 .idea
 twingo2.iml

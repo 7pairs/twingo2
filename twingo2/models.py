@@ -101,7 +101,7 @@ class UserManager(BaseUserManager):
 
 class User(AbstractBaseUser):
     """
-    ユーザー情報を格納するテーブル。
+    ユーザー情報を格納するモデル。
     """
 
     twitter_id = models.IntegerField('Twitter ID', unique=True)
@@ -125,8 +125,8 @@ class User(AbstractBaseUser):
     profile_image_url = models.URLField('プロフィール画像', blank=True)
     """プロフィール画像のURL"""
 
-    is_active = models.BooleanField('有効フラグ', default=False)
-    """有効フラグ"""
+    is_active = models.BooleanField('有効', default=False)
+    """有効"""
 
     is_superuser = models.BooleanField('管理者権限', default=False)
     """管理者権限"""
@@ -144,16 +144,34 @@ class User(AbstractBaseUser):
     """マネージャー"""
 
     USERNAME_FIELD = 'twitter_id'
-    """usernameとして使用するフィールド"""
+    """Twitter IDをusernameとして使用する"""
 
     def __str__(self):
-        # Twitter IDの文字列表現を返す
+        """
+        当モデルの文字列表現を取得する。
+
+        :return: オブジェクトの文字列表現
+        :rtype: str
+        """
+        # Twitter IDを返す
         return str(self.twitter_id)
 
     def get_full_name(self):
+        """
+        フルネームを取得する。
+
+        :return: フルネーム
+        :rtype: str
+        """
         # ユーザー名と名前を返す
         return '%s（%s）' % (self.screen_name, self.name)
 
     def get_short_name(self):
+        """
+        短縮名を取得する。
+
+        :return: 短縮名
+        :rtype: str
+        """
         # ユーザー名を返す
         return self.screen_name

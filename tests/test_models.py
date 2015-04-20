@@ -17,7 +17,6 @@
 #
 
 import factory
-from nose.tools import *
 
 from django.test import TestCase
 
@@ -26,9 +25,12 @@ from twingo2.models import User
 
 class UserFactory(factory.DjangoModelFactory):
     """
-    Userモデルを作成するファクトリー。
+    Userのテストデータを作成するファクトリー。
     """
-    FACTORY_FOR = User
+
+    class Meta:
+        model = User
+
     twitter_id = factory.Sequence(lambda x: x)
     screen_name = factory.Sequence(lambda x: 'screen_name_%02d' % x)
     name = factory.Sequence(lambda x: 'name_%02d' % x)
@@ -48,7 +50,7 @@ class ModelsTest(TestCase):
 
     def test_create_user_01(self):
         """
-        [対象] create_user()
+        [対象] UserManager.create_user()
         [条件] 必須入力の項目のみを指定する。
         [結果] 一般ユーザーが作成される。
         """
@@ -59,19 +61,19 @@ class ModelsTest(TestCase):
         )
 
         user = User.objects.get(twitter_id=1402804142)
-        assert_equal('7pairs', user.screen_name)
-        assert_equal('ちぃといつ', user.name)
-        assert_equal('', user.description)
-        assert_equal('', user.location)
-        assert_equal('', user.url)
-        assert_equal('', user.profile_image_url)
-        assert_equal(True, user.is_active)
-        assert_equal(False, user.is_superuser)
-        assert_equal(False, user.is_staff)
+        self.assertEqual('7pairs', user.screen_name)
+        self.assertEqual('ちぃといつ', user.name)
+        self.assertEqual('', user.description)
+        self.assertEqual('', user.location)
+        self.assertEqual('', user.url)
+        self.assertEqual('', user.profile_image_url)
+        self.assertTrue(user.is_active)
+        self.assertFalse(user.is_superuser)
+        self.assertFalse(user.is_staff)
 
     def test_create_user_02(self):
         """
-        [対象] create_user()
+        [対象] UserManager.create_user()
         [条件] 任意入力の項目を指定する。
         [結果] 一般ユーザーが作成される。
         """
@@ -86,19 +88,19 @@ class ModelsTest(TestCase):
         )
 
         user = User.objects.get(twitter_id=1402804142)
-        assert_equal('7pairs', user.screen_name)
-        assert_equal('ちぃといつ', user.name)
-        assert_equal('This video has been deleted.', user.description)
-        assert_equal('西武プリンスドーム', user.location)
-        assert_equal('http://seven-pairs.hatenablog.jp/', user.url)
-        assert_equal('https://pbs.twimg.com/profile_images/1402804142/icon_400x400.jpg', user.profile_image_url)
-        assert_equal(True, user.is_active)
-        assert_equal(False, user.is_superuser)
-        assert_equal(False, user.is_staff)
+        self.assertEqual('7pairs', user.screen_name)
+        self.assertEqual('ちぃといつ', user.name)
+        self.assertEqual('This video has been deleted.', user.description)
+        self.assertEqual('西武プリンスドーム', user.location)
+        self.assertEqual('http://seven-pairs.hatenablog.jp/', user.url)
+        self.assertEqual('https://pbs.twimg.com/profile_images/1402804142/icon_400x400.jpg', user.profile_image_url)
+        self.assertTrue(user.is_active)
+        self.assertFalse(user.is_superuser)
+        self.assertFalse(user.is_staff)
 
     def test_create_superuser_01(self):
         """
-        [対象] create_superuser()
+        [対象] UserManager.create_superuser()
         [条件] 必須入力の項目のみを指定する。
         [結果] 管理者ユーザーが作成される。
         """
@@ -109,19 +111,19 @@ class ModelsTest(TestCase):
         )
 
         user = User.objects.get(twitter_id=1402804142)
-        assert_equal('7pairs', user.screen_name)
-        assert_equal('ちぃといつ', user.name)
-        assert_equal('', user.description)
-        assert_equal('', user.location)
-        assert_equal('', user.url)
-        assert_equal('', user.profile_image_url)
-        assert_equal(True, user.is_active)
-        assert_equal(True, user.is_superuser)
-        assert_equal(True, user.is_staff)
+        self.assertEqual('7pairs', user.screen_name)
+        self.assertEqual('ちぃといつ', user.name)
+        self.assertEqual('', user.description)
+        self.assertEqual('', user.location)
+        self.assertEqual('', user.url)
+        self.assertEqual('', user.profile_image_url)
+        self.assertTrue(user.is_active)
+        self.assertTrue(user.is_superuser)
+        self.assertTrue(user.is_staff)
 
     def test_create_superuser_02(self):
         """
-        [対象] create_superuser()
+        [対象] UserManager.create_superuser()
         [条件] 任意入力の項目を指定する。
         [結果] 管理者ユーザーが作成される。
         """
@@ -136,34 +138,34 @@ class ModelsTest(TestCase):
         )
 
         user = User.objects.get(twitter_id=1402804142)
-        assert_equal('7pairs', user.screen_name)
-        assert_equal('ちぃといつ', user.name)
-        assert_equal('This video has been deleted.', user.description)
-        assert_equal('西武プリンスドーム', user.location)
-        assert_equal('http://seven-pairs.hatenablog.jp/', user.url)
-        assert_equal('https://pbs.twimg.com/profile_images/1402804142/icon_400x400.jpg', user.profile_image_url)
-        assert_equal(True, user.is_active)
-        assert_equal(True, user.is_superuser)
-        assert_equal(True, user.is_staff)
+        self.assertEqual('7pairs', user.screen_name)
+        self.assertEqual('ちぃといつ', user.name)
+        self.assertEqual('This video has been deleted.', user.description)
+        self.assertEqual('西武プリンスドーム', user.location)
+        self.assertEqual('http://seven-pairs.hatenablog.jp/', user.url)
+        self.assertEqual('https://pbs.twimg.com/profile_images/1402804142/icon_400x400.jpg', user.profile_image_url)
+        self.assertTrue(user.is_active)
+        self.assertTrue(user.is_superuser)
+        self.assertTrue(user.is_staff)
 
     def test_get_full_name_01(self):
         """
-        [対象] get_full_name()
+        [対象] User.get_full_name()
         [条件] 実行する。
         [結果] ユーザー名と名前を結合した文字列を返す。
         """
         UserFactory(screen_name='screen_name01', name='ユーザー０１')
 
         user = User.objects.get(screen_name='screen_name01')
-        assert_equal('screen_name01（ユーザー０１）', user.get_full_name())
+        self.assertEqual('screen_name01（ユーザー０１）', user.get_full_name())
 
     def test_get_short_name_01(self):
         """
-        [対象] get_short_name()
+        [対象] User.get_short_name()
         [条件] 実行する。
         [結果] ユーザー名を返す。
         """
         UserFactory(screen_name='screen_name01', name='ユーザー０１')
 
         user = User.objects.get(screen_name='screen_name01')
-        assert_equal('screen_name01', user.get_short_name())
+        self.assertEqual('screen_name01', user.get_short_name())
