@@ -27,12 +27,13 @@ from twingo2.models import User
 class TwitterBackend:
     """
     TwitterのOAuthを利用した認証バックエンド。
-    ModelBackendの代替として設定することを想定している。
+    ModelBackendの代替として使用することを想定している。
     """
 
     def authenticate(self, access_token):
         """
         Twitterから取得したアクセストークンをもとに認証を行う。
+
         :param access_token: アクセストークン
         :type access_token: tuple
         :return: ユーザー情報
@@ -49,12 +50,13 @@ class TwitterBackend:
         except TweepError:
             return None
 
-        # ユーザー情報を取得する
+        # Userを取得/作成する
         try:
             user = User.objects.get(twitter_id=twitter_user.id)
         except User.DoesNotExist:
-            admin_twitter_id = getattr(settings, 'ADMIN_TWITTER_ID', None)
-            if admin_twitter_id and twitter_user.id in admin_twitter_id:
+            admin_twitter_id = getattr(settings, 'ADMIN_TWITTER_ID', ())
+            if twitter_user.id in admin_twitter_id:
+                # 管理者ユーザーを作成する
                 user = User.objects.create_superuser(
                     twitter_id=twitter_user.id,
                     screen_name=twitter_user.screen_name,
@@ -65,6 +67,7 @@ class TwitterBackend:
                     profile_image_url=twitter_user.profile_image_url
                 )
             else:
+                # 一般ユーザーを作成する
                 user = User.objects.create_user(
                     twitter_id=twitter_user.id,
                     screen_name=twitter_user.screen_name,
@@ -75,7 +78,7 @@ class TwitterBackend:
                     profile_image_url=twitter_user.profile_image_url
                 )
 
-        # ユーザーが有効であるかチェックする
+        # 有効なユーザーであるかチェックする
         if user.is_active:
             return user
         else:
@@ -84,6 +87,7 @@ class TwitterBackend:
     def get_user(self, user_id):
         """
         指定されたIDのユーザー情報を取得する。
+
         :param user_id: UserのID
         :type user_id: int
         :return: ユーザー情報
