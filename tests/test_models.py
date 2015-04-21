@@ -98,6 +98,45 @@ class ModelsTest(TestCase):
         self.assertFalse(user.is_superuser)
         self.assertFalse(user.is_staff)
 
+    def test_create_user_03(self):
+        """
+        [対象] UserManager.create_user()
+        [条件] Twitter IDを指定しない。
+        [結果] ValueErrorが送出される。
+        """
+        with self.assertRaises(ValueError):
+            User.objects.create_user(
+                twitter_id=None,
+                screen_name='7pairs',
+                name='ちぃといつ'
+            )
+
+    def test_create_user_04(self):
+        """
+        [対象] UserManager.create_user()
+        [条件] ユーザー名を指定しない。
+        [結果] ValueErrorが送出される。
+        """
+        with self.assertRaises(ValueError):
+            User.objects.create_user(
+                twitter_id=1402804142,
+                screen_name=None,
+                name='ちぃといつ'
+            )
+
+    def test_create_user_05(self):
+        """
+        [対象] UserManager.create_user()
+        [条件] 名前を指定しない。
+        [結果] ValueErrorが送出される。
+        """
+        with self.assertRaises(ValueError):
+            User.objects.create_user(
+                twitter_id=1402804142,
+                screen_name='7pairs',
+                name=None
+            )
+
     def test_create_superuser_01(self):
         """
         [対象] UserManager.create_superuser()
@@ -148,15 +187,65 @@ class ModelsTest(TestCase):
         self.assertTrue(user.is_superuser)
         self.assertTrue(user.is_staff)
 
+    def test_create_superuser_03(self):
+        """
+        [対象] UserManager.create_superuser()
+        [条件] Twitter IDを指定しない。
+        [結果] ValueErrorが送出される。
+        """
+        with self.assertRaises(ValueError):
+            User.objects.create_superuser(
+                twitter_id=None,
+                screen_name='7pairs',
+                name='ちぃといつ'
+            )
+
+    def test_create_superuser_04(self):
+        """
+        [対象] UserManager.create_superuser()
+        [条件] ユーザー名を指定しない。
+        [結果] ValueErrorが送出される。
+        """
+        with self.assertRaises(ValueError):
+            User.objects.create_superuser(
+                twitter_id=1402804142,
+                screen_name=None,
+                name='ちぃといつ'
+            )
+
+    def test_create_superuser_05(self):
+        """
+        [対象] UserManager.create_user()
+        [条件] 名前を指定しない。
+        [結果] ValueErrorが送出される。
+        """
+        with self.assertRaises(ValueError):
+            User.objects.create_user(
+                twitter_id=1402804142,
+                screen_name='7pairs',
+                name=None
+            )
+
+    def test_str_01(self):
+        """
+        [対象] User.__str__()
+        [条件] 実行する。
+        [結果] Twitter IDの文字列表現を返す。
+        """
+        UserFactory(twitter_id=12345, screen_name='screen_name01', name='ユーザー０１')
+
+        user = User.objects.get(screen_name='screen_name01')
+        self.assertEqual('12345', str(user))
+
     def test_get_full_name_01(self):
         """
         [対象] User.get_full_name()
         [条件] 実行する。
         [結果] ユーザー名と名前を結合した文字列を返す。
         """
-        UserFactory(screen_name='screen_name01', name='ユーザー０１')
+        UserFactory(twitter_id=12345, screen_name='screen_name01', name='ユーザー０１')
 
-        user = User.objects.get(screen_name='screen_name01')
+        user = User.objects.get(twitter_id=12345)
         self.assertEqual('screen_name01（ユーザー０１）', user.get_full_name())
 
     def test_get_short_name_01(self):
@@ -165,7 +254,7 @@ class ModelsTest(TestCase):
         [条件] 実行する。
         [結果] ユーザー名を返す。
         """
-        UserFactory(screen_name='screen_name01', name='ユーザー０１')
+        UserFactory(twitter_id=12345, screen_name='screen_name01', name='ユーザー０１')
 
-        user = User.objects.get(screen_name='screen_name01')
+        user = User.objects.get(twitter_id=12345)
         self.assertEqual('screen_name01', user.get_short_name())
