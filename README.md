@@ -1,5 +1,8 @@
 # twingo2
 
+[![Build Status](https://travis-ci.org/7pairs/twingo2.svg?branch=master)](https://travis-ci.org/7pairs/twingo2)
+[![Coverage Status](https://coveralls.io/repos/7pairs/twingo2/badge.svg?branch=master)](https://coveralls.io/r/7pairs/twingo2?branch=master)
+
 ## 概要
 
 "twingo2"は、TwitterのOAuthを利用したDjangoの認証バックエンドです。
