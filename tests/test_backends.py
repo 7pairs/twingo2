@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+import datetime
 from mock import patch
 
 import factory
@@ -62,6 +63,7 @@ class UserFactory(factory.DjangoModelFactory):
     is_active = True
     is_superuser = False
     is_staff = False
+    last_login = datetime.datetime.now()
 
 
 class DisableUserFactory(UserFactory):

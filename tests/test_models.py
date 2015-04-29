@@ -16,6 +16,8 @@
 # limitations under the License.
 #
 
+import datetime
+
 import factory
 
 from django.test import TestCase
@@ -41,6 +43,7 @@ class UserFactory(factory.DjangoModelFactory):
     is_active = True
     is_superuser = False
     is_staff = False
+    last_login = datetime.datetime.now()
 
 
 class ModelsTest(TestCase):

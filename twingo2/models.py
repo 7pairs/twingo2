@@ -16,6 +16,8 @@
 # limitations under the License.
 #
 
+import datetime
+
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.db import models
 
@@ -92,6 +94,7 @@ class UserManager(BaseUserManager):
             is_active=True,
             is_superuser=is_superuser,
             is_staff=is_staff,
+            last_login=datetime.datetime.now(),
             **extra_fields
         )
         user.set_unusable_password()
