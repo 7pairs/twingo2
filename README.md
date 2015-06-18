@@ -6,11 +6,12 @@
 ## 概要
 
 "twingo2"は、TwitterのOAuthを利用したDjangoの認証バックエンドです。
-Twitterのユーザー情報による認証の仕組みを簡単な記述でアプリケーションに組み込むことができます。
+Twitterのユーザー情報による認証の仕組みを簡単な記述でDjangoアプリケーションに組み込むことができます。
 
 ## バージョン
 
-Python3.4 + Django1.8での動作を確認しています。また、Python3.3およびDjango1.7でもユニットテストを実施しています。
+Python3.4 + Django1.8での動作を確認しています。
+また、Python3.3およびDjango1.7でもユニットテストを実施しています。
 
 ## インストール
 
@@ -28,7 +29,7 @@ $ pip install git+https://github.com/7pairs/twingo2.git
 
 ## 設定
 
-twingo2をDjangoから呼び出すための設定を行います。
+Djangoからtwingo2を呼び出すための設定を行います。
 まず、 `settings.py` の `INSTALLED_APPS` に `twingo2` を追加してください。
 
 ```python
@@ -56,22 +57,22 @@ AUTH_USER_MODEL = 'twingo2.User'
 
 また、あわせて `settings.py` に以下の定数を定義してください。
 
-|定数名|設定する値|
-|---|---|
-|`CONSUMER_KEY`|Twitter APIのConsumer Key|
+|定数名           |設定する値                  |
+|-----------------|----------------------------|
+|`CONSUMER_KEY`   |Twitter APIのConsumer Key   |
 |`CONSUMER_SECRET`|Twitter APIのConsumer Secret|
 
-なお、以下の定数を定義することでtwingo2のデフォルトの動作を上書きすることができます（任意）。
+なお、以下の定数を定義することで、twingo2のデフォルトの動作を上書きすることができます（任意）。
 
-|定数名|設定する値|デフォルト値|
-|---|---|---|
-|`ADMIN_TWITTER_ID`|管理者のTwitter ID（Screen Nameではありません）を格納したタプル（複数指定可能）|`None`|
-|`AFTER_LOGIN_URL`|ログイン成功後のリダイレクト先URL|`/`|
-|`AFTER_LOGOUT_URL`|ログアウト後のリダイレクト先URL|`/`|
+|定数名            |設定する値                                                                     |デフォルト値|
+|------------------|-------------------------------------------------------------------------------|------------|
+|`ADMIN_TWITTER_ID`|管理者のTwitter ID（Screen Nameではありません）を格納したタプル（複数指定可能）|`None`      |
+|`AFTER_LOGIN_URL` |ログイン成功後のリダイレクト先URL                                              |`/`         |
+|`AFTER_LOGOUT_URL`|ログアウト後のリダイレクト先URL                                                |`/`         |
 
 ## URLディスパッチャー
 
-`urls.py` に以下の設定を追加してください。
+`urls.py` に以下の記述を追加してください。
 
 ```python
 urlpatterns = patterns('',
@@ -80,7 +81,8 @@ urlpatterns = patterns('',
 )
 ```
 
-`r'^authentication_url/'` は任意のURLで構いません。その配下のURLでtwingo2が動作します。
+`r'^authentication_url/'` は任意のURLで構いません。
+その配下のURLでtwingo2が動作します。
 
 また、 `@login_required` デコレータを使用する場合、 `settings.py` に以下の記述を追加してください。
 

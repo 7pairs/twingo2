@@ -56,7 +56,7 @@ class ViewsTest(TestCase):
     @patch('twingo2.views.OAuthHandler')
     def test_twitter_login_01(self, oauth_handler):
         """
-        [対象] twitter_login()
+        [対象] twitter_login() : No.01
         [条件] 次ページを指定せずにアクセスする。
         [結果] セッションにリクエストトークンが保管され、認証ページにリダイレクトされる。
         """
@@ -72,7 +72,7 @@ class ViewsTest(TestCase):
     @patch('twingo2.views.OAuthHandler')
     def test_twitter_login_02(self, oauth_handler):
         """
-        [対象] twitter_login()
+        [対象] twitter_login() : No.02
         [条件] 次ページを指定してアクセスする。
         [結果] セッションにリクエストトークンと次ページのURLが保管され、認証ページにリダイレクトされる。
         """
@@ -83,14 +83,14 @@ class ViewsTest(TestCase):
         session = self.client.session
         self.assertRedirects(response, '/redirect/')
         self.assertEqual('Request Token', session['request_token'])
-        self.assertEqual('/next_page/', session.get('next'))
+        self.assertEqual('/next_page/', session['next'])
 
     @patch('twingo2.views.login')
     @patch('twingo2.views.authenticate')
     @patch('twingo2.views.OAuthHandler')
     def test_twitter_callback_01(self, oauth_handler, authenticate, login):
         """
-        [対象] twitter_callback()
+        [対象] twitter_callback() : No.01
         [条件] ログイン後に遷移する画面をセッションで指定する。
         [結果] 指定された画面にリダイレクトされる。
         """
@@ -110,7 +110,7 @@ class ViewsTest(TestCase):
     @patch('twingo2.views.OAuthHandler')
     def test_twitter_callback_02(self, oauth_handler, authenticate, login):
         """
-        [対象] twitter_callback()
+        [対象] twitter_callback() : No.02
         [条件] ログイン後に遷移する画面をsettings.pyで指定する。
         [結果] 指定された画面にリダイレクトされる。
         """
@@ -128,7 +128,7 @@ class ViewsTest(TestCase):
     @patch('twingo2.views.OAuthHandler')
     def test_twitter_callback_03(self, oauth_handler, authenticate, login):
         """
-        [対象] twitter_callback()
+        [対象] twitter_callback() : No.03
         [条件] ログイン後に遷移する画面を指定しない。
         [結果] トップ画面にリダイレクトされる。
         """
@@ -143,7 +143,7 @@ class ViewsTest(TestCase):
 
     def test_twitter_callback_04(self):
         """
-        [対象] twitter_callback()
+        [対象] twitter_callback() : No.04
         [条件] リクエストトークンをセッションに設定しない。
         [結果] 401エラーが発生する。
         """
@@ -152,7 +152,7 @@ class ViewsTest(TestCase):
 
     def test_twitter_callback_05(self):
         """
-        [対象] twitter_callback()
+        [対象] twitter_callback() : No.05
         [条件] セッションに格納されたリクエストトークンとGETパラメータのリクエストトークンが異なる。
         [結果] 401エラーが発生する。
         """
@@ -167,7 +167,7 @@ class ViewsTest(TestCase):
     @patch('twingo2.views.OAuthHandler')
     def test_twitter_callback_06(self, oauth_handler, authenticate):
         """
-        [対象] twitter_callback()
+        [対象] twitter_callback() : No.06
         [条件] 認証処理に失敗する。
         [結果] 401エラーが発生する。
         """
@@ -184,7 +184,7 @@ class ViewsTest(TestCase):
     @patch('twingo2.views.logout')
     def test_twitter_logout_01(self, logout):
         """
-        [対象] twitter_logout()
+        [対象] twitter_logout() : No.01
         [条件] ログイン後に遷移する画面をsettings.pyで指定する。
         [結果] 指定された画面にリダイレクトされる。
         """
@@ -194,7 +194,7 @@ class ViewsTest(TestCase):
     @patch('twingo2.views.logout')
     def test_twitter_logout_02(self, logout):
         """
-        [対象] twitter_logout()
+        [対象] twitter_logout() : No.02
         [条件] ログイン後に遷移する画面をsettings.pyで指定しない。
         [結果] トップ画面にリダイレクトされる。
         """

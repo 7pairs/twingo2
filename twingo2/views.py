@@ -54,7 +54,7 @@ def twitter_login(request):
 
 def twitter_callback(request):
     """
-    Twitterからのコールバック時に呼び出される処理。
+    Twitterからのコールバック時に呼び出される。
 
     :param request: リクエストオブジェクト
     :type request: django.http.HttpRequest
@@ -89,7 +89,7 @@ def twitter_callback(request):
         request.session.clear()
         return HttpResponse('Unauthorized', status=401)
 
-    # ログイン後に遷移するべき画面にリダイレクトする
+    # ログイン後に遷移すべき画面にリダイレクトする
     url = request.session.get('next', getattr(settings, 'AFTER_LOGIN_URL', '/'))
     return HttpResponseRedirect(url)
 
@@ -106,6 +106,6 @@ def twitter_logout(request):
     # ログアウト処理を実行する
     logout(request)
 
-    # ログアウト後に遷移するべき画面にリダイレクトする
+    # ログアウト後に遷移すべき画面にリダイレクトする
     url = getattr(settings, 'AFTER_LOGOUT_URL', '/')
     return HttpResponseRedirect(url)

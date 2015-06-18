@@ -46,14 +46,14 @@ class UserFactory(factory.DjangoModelFactory):
     last_login = datetime.datetime.now()
 
 
-class ModelsTest(TestCase):
+class UserManagerTest(TestCase):
     """
-    models.pyに対するテストコード。
+    models.UserManagerに対するテストコード。
     """
 
     def test_create_user_01(self):
         """
-        [対象] UserManager.create_user()
+        [対象] create_user() : No.01
         [条件] 必須入力の項目のみを指定する。
         [結果] 一般ユーザーが作成される。
         """
@@ -76,7 +76,7 @@ class ModelsTest(TestCase):
 
     def test_create_user_02(self):
         """
-        [対象] UserManager.create_user()
+        [対象] create_user() : No.02
         [条件] 任意入力の項目を指定する。
         [結果] 一般ユーザーが作成される。
         """
@@ -103,7 +103,7 @@ class ModelsTest(TestCase):
 
     def test_create_user_03(self):
         """
-        [対象] UserManager.create_user()
+        [対象] create_user() : No.03
         [条件] Twitter IDを指定しない。
         [結果] ValueErrorが送出される。
         """
@@ -116,7 +116,7 @@ class ModelsTest(TestCase):
 
     def test_create_user_04(self):
         """
-        [対象] UserManager.create_user()
+        [対象] create_user() : No.04
         [条件] ユーザー名を指定しない。
         [結果] ValueErrorが送出される。
         """
@@ -129,7 +129,7 @@ class ModelsTest(TestCase):
 
     def test_create_user_05(self):
         """
-        [対象] UserManager.create_user()
+        [対象] create_user() : No.05
         [条件] 名前を指定しない。
         [結果] ValueErrorが送出される。
         """
@@ -142,7 +142,7 @@ class ModelsTest(TestCase):
 
     def test_create_superuser_01(self):
         """
-        [対象] UserManager.create_superuser()
+        [対象] create_superuser() : No.01
         [条件] 必須入力の項目のみを指定する。
         [結果] 管理者ユーザーが作成される。
         """
@@ -165,7 +165,7 @@ class ModelsTest(TestCase):
 
     def test_create_superuser_02(self):
         """
-        [対象] UserManager.create_superuser()
+        [対象] create_superuser() : No.02
         [条件] 任意入力の項目を指定する。
         [結果] 管理者ユーザーが作成される。
         """
@@ -192,7 +192,7 @@ class ModelsTest(TestCase):
 
     def test_create_superuser_03(self):
         """
-        [対象] UserManager.create_superuser()
+        [対象] create_superuser() : No.03
         [条件] Twitter IDを指定しない。
         [結果] ValueErrorが送出される。
         """
@@ -205,7 +205,7 @@ class ModelsTest(TestCase):
 
     def test_create_superuser_04(self):
         """
-        [対象] UserManager.create_superuser()
+        [対象] create_superuser() : No.04
         [条件] ユーザー名を指定しない。
         [結果] ValueErrorが送出される。
         """
@@ -218,46 +218,55 @@ class ModelsTest(TestCase):
 
     def test_create_superuser_05(self):
         """
-        [対象] UserManager.create_user()
+        [対象] create_superuser() : No.05
         [条件] 名前を指定しない。
         [結果] ValueErrorが送出される。
         """
         with self.assertRaises(ValueError):
-            User.objects.create_user(
+            User.objects.create_superuser(
                 twitter_id=1402804142,
                 screen_name='7pairs',
                 name=None
             )
 
+
+class UserTest(TestCase):
+    """
+    models.Userに対するテストコード。
+    """
+
     def test_str_01(self):
         """
-        [対象] User.__str__()
+        [対象] __str__() : No.01
         [条件] 実行する。
-        [結果] Twitter IDの文字列表現を返す。
+        [結果] Twitter IDの文字列表現が返却される。
         """
         UserFactory(twitter_id=12345, screen_name='screen_name01', name='ユーザー０１')
 
         user = User.objects.get(screen_name='screen_name01')
-        self.assertEqual('12345', str(user))
+        actual = str(user)
+        self.assertEqual('12345', actual)
 
     def test_get_full_name_01(self):
         """
-        [対象] User.get_full_name()
+        [対象] get_full_name() : No.01
         [条件] 実行する。
-        [結果] ユーザー名と名前を結合した文字列を返す。
+        [結果] ユーザー名と名前を結合した文字列が返却される。
         """
         UserFactory(twitter_id=12345, screen_name='screen_name01', name='ユーザー０１')
 
         user = User.objects.get(twitter_id=12345)
-        self.assertEqual('screen_name01（ユーザー０１）', user.get_full_name())
+        actual = user.get_full_name()
+        self.assertEqual('screen_name01（ユーザー０１）', actual)
 
     def test_get_short_name_01(self):
         """
-        [対象] User.get_short_name()
+        [対象] get_short_name() : No.01
         [条件] 実行する。
-        [結果] ユーザー名を返す。
+        [結果] ユーザー名が返却される。
         """
         UserFactory(twitter_id=12345, screen_name='screen_name01', name='ユーザー０１')
 
         user = User.objects.get(twitter_id=12345)
-        self.assertEqual('screen_name01', user.get_short_name())
+        actual = user.get_short_name()
+        self.assertEqual('screen_name01', actual)

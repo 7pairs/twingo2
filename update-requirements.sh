@@ -23,16 +23,21 @@ INSTALL_LIBRARIES=('Django' 'tweepy' 'nose' 'django-nose' 'factory-boy' 'mock')
 EXCLUDE_LIBRARIES=('Django')
 
 # インストール済みのライブラリをいったんアンインストールする
+echo '*****  Uninstall START ' `date +'%Y-%m-%d %H:%M:%S'` ' *****'
 pip freeze | awk -F '==' '{print $1}' | while read library; do
     pip uninstall -y ${library}
 done
+echo '*****  Uninstall END   ' `date +'%Y-%m-%d %H:%M:%S'` ' *****'
 
 # 対象のライブラリをインストールする
+echo '*****  Install   START ' `date +'%Y-%m-%d %H:%M:%S'` ' *****'
 for library in ${INSTALL_LIBRARIES[@]}; do
     pip install $library
 done
+echo '*****  Install   END   ' `date +'%Y-%m-%d %H:%M:%S'` ' *****'
 
 # requirements.txtを更新する
+echo '*****  Update    START ' `date +'%Y-%m-%d %H:%M:%S'` ' *****'
 : > ./requirements.txt
 pip freeze | while read line; do
     for exclude in ${EXCLUDE_LIBRARIES[@]}; do
@@ -42,3 +47,4 @@ pip freeze | while read line; do
     done
     echo ${line} >> ./requirements.txt
 done
+echo '*****  Update    END   ' `date +'%Y-%m-%d %H:%M:%S'` ' *****'
