@@ -153,7 +153,7 @@ class User(AbstractBaseUser):
         """
         当モデルの文字列表現を取得する。
 
-        :return: オブジェクトの文字列表現
+        :return: モデルの文字列表現
         :rtype: str
         """
         # Twitter IDを返す
