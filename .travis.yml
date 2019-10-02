@@ -7,7 +7,6 @@ python:
   - 3.7
 
 env:
-  - DJANGO=1.7
   - DJANGO=1.8
 
 install:
